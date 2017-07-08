@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <IsPackable>True</IsPackable>
+    <Description>Cross-platform build automation system</Description> 
+    <Authors>Sebastian Karasek</Authors>
+    <Copyright>Copyright © Sebastian Karasek 2018</Copyright>
+    <PackageTags>build automation</PackageTags>
+    <PackageProjectUrl>https://nuke.build</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nuke-build/sample</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/nuke-build/sample/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</PackageIconUrl>
+    <DocumentationFile />
+  </PropertyGroup>
+
+
+  <Import Project="..\..\shared\Configuration.props" />
+
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.4" />
+    <PackageReference Include="Nuke.Common" Version="0.4" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+  </ItemGroup>
+
+</Project>

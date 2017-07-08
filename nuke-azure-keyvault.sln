@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.Azure.KeyVault", "source\Nuke.Azure.KeyVault\Nuke.Azure.KeyVault.csproj", "{AE561C37-4BC0-4AF1-9740-F5ED836789B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{A9B06A31-502E-4E99-B189-B155B2B84506}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.nuke = .nuke
+		build.cmd = build.cmd
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		CHANGELOG.md = CHANGELOG.md
+		GitVersion.yml = GitVersion.yml
+		LICENSE = LICENSE
+		nuke-azure-keyvault.DotSettings = nuke-azure-keyvault.DotSettings
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = ".build", ".build\.build.csproj", "{EBCB4686-9D19-411A-B52F-26B8A12582D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBCB4686-9D19-411A-B52F-26B8A12582D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBCB4686-9D19-411A-B52F-26B8A12582D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBCB4686-9D19-411A-B52F-26B8A12582D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {761E201C-41B5-49DD-A1A1-ACA05931C944}
+	EndGlobalSection
+EndGlobal

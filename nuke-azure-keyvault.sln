@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{A9B06A31-5
 		build.sh = build.sh
 		CHANGELOG.md = CHANGELOG.md
 		GitVersion.yml = GitVersion.yml
+		Jenkinsfile = Jenkinsfile
 		LICENSE = LICENSE
 		nuke-azure-keyvault.DotSettings = nuke-azure-keyvault.DotSettings
 		README.md = README.md

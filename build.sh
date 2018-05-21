@@ -20,7 +20,7 @@ SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 ###########################################################################
 
 DOTNET_CHANNEL="2.0"
-BUILD_PROJECT_FILE="$SCRIPT_DIR/build/.build.csproj"
+BUILD_PROJECT_FILE="$SCRIPT_DIR/.build/.build.csproj"
 
 TEMP_DIRECTORY="$SCRIPT_DIR/.tmp"
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Git;
+using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities;
@@ -58,7 +59,16 @@ class Build : NukeBuild
 
     Target Pack => _ => _
             .DependsOn(Compile)
-            .Executes(() => DotNetPack(x => DefaultDotNetPack));
+            .Executes(() =>
+            {
+                var releaseNotes = ExtractChangelogSectionNotes(ChangelogFile)
+                        .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
+                        .Concat(string.Empty)
+                        .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
+                        .JoinNewLine();
+
+                DotNetPack(x => DefaultDotNetPack.SetPackageReleaseNotes(releaseNotes));
+            });
 
     Target Changelog => _ => _
             .OnlyWhen(() => InvokedTargets.Contains(nameof(Changelog)))

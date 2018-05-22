@@ -3,15 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <IsPackable>True</IsPackable>
-    <Description>Cross-platform build automation system</Description> 
+    <Description>Docker extension for the cross-plattform automation system Nuke.</Description> 
     <Authors>Sebastian Karasek</Authors>
     <Copyright>Copyright © Sebastian Karasek 2018</Copyright>
-    <PackageTags>build automation</PackageTags>
+    <PackageTags>build automation nuke.build azure-keyvault nuke-addon</PackageTags>
     <PackageProjectUrl>https://nuke.build</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/nuke-build/sample</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/nuke-build/sample/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/nuke-build/azure-keyvault</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/nuke-build/azure-keyvault/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</PackageIconUrl>
-    <DocumentationFile />
   </PropertyGroup>
 
 

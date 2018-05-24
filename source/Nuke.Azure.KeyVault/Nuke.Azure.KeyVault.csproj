@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <IsPackable>True</IsPackable>
-    <Description>Docker extension for the cross-plattform automation system Nuke.</Description> 
+    <Description>Azure Keyvault extension for the cross-plattform automation system Nuke.</Description> 
     <Authors>Sebastian Karasek</Authors>
     <Copyright>Copyright © Sebastian Karasek 2018</Copyright>
     <PackageTags>build automation nuke.build azure-keyvault nuke-addon</PackageTags>

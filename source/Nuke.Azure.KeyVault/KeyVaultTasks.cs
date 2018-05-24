@@ -7,8 +7,16 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Nuke.Azure.KeyVault;
 using Nuke.Common;
 using Nuke.Common.Execution;
+
+[assembly: IconClass(typeof(KeyVaultTasks), "safe")]
+[assembly: IconClass(typeof(KeyVaultTasks.CertificateAttribute), "safe")]
+[assembly: IconClass(typeof(KeyVaultTasks.KeyAttribute), "safe")]
+[assembly: IconClass(typeof(KeyVaultTasks.KeyVaultAttribute), "safe")]
+[assembly: IconClass(typeof(KeyVaultTasks.ParametersAttribute), "safe")]
+[assembly: IconClass(typeof(KeyVaultTasks.SecretAttribute), "safe")]
 
 namespace Nuke.Azure.KeyVault
 {

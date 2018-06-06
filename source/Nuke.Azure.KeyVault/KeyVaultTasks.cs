@@ -7,16 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Nuke.Azure.KeyVault;
 using Nuke.Common;
 using Nuke.Common.Execution;
-
-[assembly: IconClass(typeof(KeyVaultTasks), "safe")]
-[assembly: IconClass(typeof(KeyVaultTasks.CertificateAttribute), "safe")]
-[assembly: IconClass(typeof(KeyVaultTasks.KeyAttribute), "safe")]
-[assembly: IconClass(typeof(KeyVaultTasks.KeyVaultAttribute), "safe")]
-[assembly: IconClass(typeof(KeyVaultTasks.ParametersAttribute), "safe")]
-[assembly: IconClass(typeof(KeyVaultTasks.SecretAttribute), "safe")]
 
 namespace Nuke.Azure.KeyVault
 {
@@ -25,6 +17,7 @@ namespace Nuke.Azure.KeyVault
     {
         /// <summary> Attribute to obtain a certificates from from the Azure KeyVault defined by <see cref="ParametersAttribute"/>.</summary>
         [PublicAPI]
+        [Obsolete("Use " + nameof(KeyVaultCertificateAttribute) + " instead.")]
         public class CertificateAttribute : SecretAttribute
         {
             /// <summary> Attribute to obtain certificates from from the Azure KeyVault defined by <see cref="ParametersAttribute"/>.</summary>
@@ -55,6 +48,7 @@ namespace Nuke.Azure.KeyVault
 
         /// <summary>Defines where the KeyVault login details can be found. Either <see cref="VaultBaseUrl"/> or <see cref="VaultBaseUrlParameterName"/> must be set.</summary>
         [PublicAPI]
+        [Obsolete("Use " + nameof(KeyVaultSettingsAttribute) + " instead.")]
         [AttributeUsage(AttributeTargets.Class, Inherited = false)]
         public class ParametersAttribute : Attribute
         {
@@ -129,6 +123,7 @@ namespace Nuke.Azure.KeyVault
         [PublicAPI]
         [AttributeUsage(AttributeTargets.Field)]
         [MeansImplicitUse(ImplicitUseKindFlags.Assign)]
+        [Obsolete("Use " + nameof(KeyVaultSecretAttribute) + " instead.")]
         public class SecretAttribute : InjectionAttributeBase
         {
             protected static KeyVaultTaskSettings CreateSettings (string secretName, ParametersAttribute parametersAttribute)
@@ -185,6 +180,7 @@ namespace Nuke.Azure.KeyVault
 
         /// <summary>Attribute to obtain the KeyVault defined by <see cref="T:Nuke.Azure.KeyVault.KeyVaultTasks.ParametersAttribute"/> to retrieve multiple items.</summary>
         [PublicAPI]
+        [Obsolete("Use " + nameof(Azure.KeyVault.KeyVaultAttribute) + " instead.")]
         public class KeyVaultAttribute : SecretAttribute
         {
             public override object GetValue (string memberName, Type memberType)
@@ -197,6 +193,7 @@ namespace Nuke.Azure.KeyVault
 
         // <summary> Attribute to obtain a key from from the Azure KeyVault defined by <see cref="ParametersAttribute"/>.</summary>
         [PublicAPI]
+        [Obsolete("Use " + nameof(KeyVaultKeyAttribute) + " instead.")]
         public class KeyAttribute : SecretAttribute
         {
             // <summary> Attribute to obtain a key from from the Azure KeyVault defined by <see cref="ParametersAttribute"/>.</summary>

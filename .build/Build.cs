@@ -8,6 +8,7 @@ using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.Git;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities;
@@ -84,8 +85,7 @@ class Build : NukeBuild
     Target Push => _ => _
             .DependsOn(Pack)
             .Requires(() => ApiKey)
-            .Requires(() => !GitHasUncommitedChanges())
-            .Requires(() => !NuGet || GitVersionAttribute.Bump.HasValue)
+            .Requires(() => !GitHasCleanWorkingCopy())
             .Requires(() => !NuGet || Configuration.EqualsOrdinalIgnoreCase("release"))
             .Requires(() => !NuGet || GitVersion.BranchName.Equals("master"))
             .Executes(() => GlobFiles(OutputDirectory, "*.nupkg")

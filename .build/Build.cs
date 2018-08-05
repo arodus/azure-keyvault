@@ -85,7 +85,7 @@ class Build : NukeBuild
     Target Push => _ => _
             .DependsOn(Pack)
             .Requires(() => ApiKey)
-            .Requires(() => !GitHasCleanWorkingCopy())
+            .Requires(() => GitHasCleanWorkingCopy())
             .Requires(() => !NuGet || Configuration.EqualsOrdinalIgnoreCase("release"))
             .Requires(() => !NuGet || GitVersion.BranchName.Equals("master"))
             .Executes(() => GlobFiles(OutputDirectory, "*.nupkg")

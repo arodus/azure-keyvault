@@ -27,14 +27,9 @@ namespace Nuke.Azure.KeyVault
         [CanBeNull]
         public override object GetValue (string memberName, Type memberType)
         {
-            var parametersAttribute = GetParametersAttribute();
-            if (!parametersAttribute.IsValid) return null;
-
-            var secretName = SecretName ?? memberName;
-
-            if (memberType == typeof(KeyVaultCertificate))
-                return KeyVaultTasks.GetCertificateBundle(CreateSettings(secretName, parametersAttribute), IncludeKey);
-            throw new NotSupportedException();
+            if (memberType != typeof(KeyVaultCertificate))
+                throw new NotSupportedException();
+            return base.GetValue(memberName, memberType);
         }
     }
 }

@@ -24,5 +24,14 @@ namespace Nuke.Azure.KeyVault
 
         /// <summary><p>The base url of the Azure Key Vault.</p></summary>
         public string VaultBaseUrl { get; internal set; }
+
+        public KeyVaultTaskSettings() { }
+
+        public KeyVaultTaskSettings (KeyVaultSettings keyVaultSettings)
+        {
+            ClientId = keyVaultSettings.ClientId;
+            ClientSecret = keyVaultSettings.Secret;
+            VaultBaseUrl = keyVaultSettings.BaseUrl;
+        }
     }
 }

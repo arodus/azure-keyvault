@@ -47,5 +47,16 @@ namespace Nuke.Azure.KeyVault
             keyVaultSettings.VaultBaseUrl = vaultBaseUrl;
             return keyVaultSettings;
         }
+
+        /// <summary><p><em>Sets <see cref="KeyVaultTaskSettings.VaultBaseUrl"/>, <see cref="KeyVaultTaskSettings.ClientSecret"/> and <see cref="KeyVaultTaskSettings.ClientId"/>.</em></p></summary>
+        [Pure]
+        public static KeyVaultTaskSettings Set (this KeyVaultTaskSettings keyVaultTaskSettings, KeyVaultSettings settings)
+        {
+            keyVaultTaskSettings = keyVaultTaskSettings.NewInstance();
+            keyVaultTaskSettings.ClientId = settings.ClientId;
+            keyVaultTaskSettings.ClientSecret = settings.Secret;
+            keyVaultTaskSettings.VaultBaseUrl = settings.BaseUrl;
+            return keyVaultTaskSettings;
+        }
     }
 }

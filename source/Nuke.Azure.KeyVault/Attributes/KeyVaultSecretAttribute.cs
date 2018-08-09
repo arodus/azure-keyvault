@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
@@ -16,30 +17,23 @@ namespace Nuke.Azure.KeyVault
     [MeansImplicitUse(ImplicitUseKindFlags.Assign)]
     public class KeyVaultSecretAttribute : InjectionAttributeBase
     {
-        protected static KeyVaultTaskSettings CreateSettings (string secretName, KeyVaultSettingsAttribute parametersAttribute)
+        protected static KeyVaultTaskSettings CreateSettings (string secretName, KeyVaultSettings keyVaultSettings)
         {
-            ControlFlow.Assert(parametersAttribute.IsValid, "attribute.IsValid");
             return new KeyVaultTaskSettings()
-                    // ReSharper disable AssignNullToNotNullAttribute
-                    .SetClientId(parametersAttribute.ClientId)
-                    .SetVaultBaseUrl(parametersAttribute.VaultBaseUrl)
-                    .SetClientSecret(parametersAttribute.Secret)
+                    .SetClientId(keyVaultSettings.ClientId)
+                    .SetVaultBaseUrl(keyVaultSettings.BaseUrl)
+                    .SetClientSecret(keyVaultSettings.Secret)
                     .SetSecretName(secretName);
-            // ReSharper restore AssignNullToNotNullAttribute
         }
 
-        protected static KeyVaultSettingsAttribute GetParametersAttribute ()
+        /// <summary>Obtain the secret with the given name from the KeyVault defined by <see cref="KeyVaultSettingsAttribute"/></summary>
+        public KeyVaultSecretAttribute ()
         {
-            var secretAttribute =
-                    NukeBuild.Instance.GetType().GetCustomAttributes(typeof(KeyVaultSettingsAttribute), inherit: false)
-                            .SingleOrDefault() as KeyVaultSettingsAttribute;
-
-            return secretAttribute.NotNull($"{nameof(KeyVaultSettingsAttribute)} must be defined");
         }
 
         /// <summary>Obtain the secret with the given name from the KeyVault defined by <see cref="KeyVaultSettingsAttribute"/></summary>
         /// <param name="secretName">The name of the secret to obtain. If the name is null the name of the property is used.</param>
-        public KeyVaultSecretAttribute (string secretName = null)
+        public KeyVaultSecretAttribute (string secretName)
         {
             SecretName = secretName;
         }
@@ -49,22 +43,53 @@ namespace Nuke.Azure.KeyVault
         public string SecretName { get; set; }
 
         [CanBeNull]
+        public string SettingFieldName { get; set; }
+
+        [CanBeNull]
         public override object GetValue ([NotNull] string memberName, [NotNull] Type memberType)
         {
-            var parametersAttribute = GetParametersAttribute();
-            if (!parametersAttribute.IsValid) return null;
+            var settings = GetSettings();
 
             var secretName = SecretName ?? memberName;
             if (memberType == typeof(string))
-                return KeyVaultTasks.GetSecret(CreateSettings(secretName, parametersAttribute));
+                return KeyVaultTasks.GetSecret(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultKey))
-                return KeyVaultTasks.GetKeyBundle(CreateSettings(secretName, parametersAttribute));
+                return KeyVaultTasks.GetKeyBundle(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultCertificate))
-                return KeyVaultTasks.GetCertificateBundle(CreateSettings(secretName, parametersAttribute));
+                return KeyVaultTasks.GetCertificateBundle(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVault))
-                return KeyVaultTasks.LoadVault(CreateSettings(secretName, parametersAttribute));
+                return KeyVaultTasks.LoadVault(CreateSettings(secretName, settings));
 
             throw new NotSupportedException();
+        }
+
+        protected KeyVaultSettings GetSettings ()
+        {
+            var instance = NukeBuild.Instance.NotNull();
+            var instanceType = instance.GetType();
+
+            var attributes = instanceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Select(x => new { Field = x, Attribute = x.GetCustomAttribute<KeyVaultSettingsAttribute>() })
+                    .Where(x => x.Attribute != null)
+                    .ToArray();
+
+            ControlFlow.Assert(attributes.Length > 0,
+                    "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
+
+            KeyVaultSettingsAttribute attribute;
+            if (attributes.Length > 1)
+            {
+                ControlFlow.Assert(SettingFieldName != null,
+                        "There is more then one KeyVaultSettings field defined. Please specify which one to use by setting 'SettingFieldName'");
+                attribute = attributes.FirstOrDefault(x => x.Field.Name == SettingFieldName)
+                        .NotNull($"A KeyVaultSetting field with the name {SettingFieldName} does not exist.").Attribute;
+            }
+            else
+            {
+                attribute = attributes[0].Attribute;
+            }
+
+            return attribute.GetValue();
         }
     }
 }

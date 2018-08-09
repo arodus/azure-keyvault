@@ -71,7 +71,7 @@ class Build : NukeBuild
             .OnlyWhen(ShouldUpdateChangelog)
             .Executes(() =>
             {
-                FinalizeChangelog(ChangelogFile, GitVersion.SemVer, GitRepository);
+                FinalizeChangelog(ChangelogFile, GitVersion.MajorMinorPatch, GitRepository);
             });
 
     Target Push => _ => _

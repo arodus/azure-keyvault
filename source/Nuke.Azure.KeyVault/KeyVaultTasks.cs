@@ -4,11 +4,9 @@
 
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Nuke.Common;
-using Nuke.Common.Execution;
 
 namespace Nuke.Azure.KeyVault
 {

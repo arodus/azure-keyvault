@@ -8,11 +8,9 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Nuke.GitHub;
-using static Nuke.Common.Tools.NuGet.NuGetTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -83,7 +81,7 @@ class Build : NukeBuild
             .Executes(() => GlobFiles(OutputDirectory, "*.nupkg")
                     .Where(x => !x.EndsWith("symbols.nupkg"))
                     .NotEmpty()
-                    .ForEach(x => NuGetPush(s => s
+                    .ForEach(x => DotNetNuGetPush(s => s
                             .SetTargetPath(x)
                             .SetSource("https://api.nuget.org/v3/index.json")
                             .SetSymbolSource("https://nuget.smbsrc.net")

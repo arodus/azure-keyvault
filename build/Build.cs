@@ -22,8 +22,8 @@ class Build : NukeBuild
 {
     const string c_toolNamespace = "Nuke.Azure.KeyVault";
     const string c_addonRepoOwner = "nuke-build";
-    const string c_addonRepoName = "azure";
-    const string c_addonName = "Azure CLI";
+    const string c_addonRepoName = "azure-keyvault";
+    const string c_addonName = "Azure Key Vault";
 
     [GitVersion] readonly GitVersion GitVersion;
     [GitRepository] readonly GitRepository GitRepository;

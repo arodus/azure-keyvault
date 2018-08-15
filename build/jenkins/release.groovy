@@ -31,7 +31,7 @@ pipeline {
     post {
         always {
             script {
-                githubNotify('github_user_nuke','nuke-build', 'azure')
+                githubNotify('github_user_nuke','nuke-build', 'azure-keyvault')
             }
         }
     }

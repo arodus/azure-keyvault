@@ -21,7 +21,7 @@ namespace Nuke.Azure.KeyVault
 
         public override object GetValue ([NotNull] string memberName, [NotNull] Type memberType)
         {
-            if (memberType != typeof(KeyVaultAttribute))
+            if (memberType != typeof(KeyVaultKey))
                 throw new NotSupportedException();
             return base.GetValue(memberName, memberType);
         }

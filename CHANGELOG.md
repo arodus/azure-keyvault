@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
-
+- Fixed build failure when parameters for `KeyVaultSettings` were not found.
+- Fixed that default values of `[Parameter]` fields were ignored when populating the `KeyVaultSettings`. 
 ## [0.4.0] / 2018-08-15
 - Changed `KeyVaultSettingsAttribute` now has to be defined on a field of the type `KeyVaultSettings`.
 - Added possibility to get secrets from multiple Key Vaults.

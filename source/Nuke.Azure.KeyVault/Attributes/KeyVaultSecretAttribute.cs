@@ -49,6 +49,11 @@ namespace Nuke.Azure.KeyVault
         public override object GetValue ([NotNull] string memberName, [NotNull] Type memberType)
         {
             var settings = GetSettings();
+            if (!settings.IsValid(out var error))
+            {
+                Logger.Warn(error);
+                return null;
+            }
 
             var secretName = SecretName ?? memberName;
             if (memberType == typeof(string))
@@ -73,8 +78,7 @@ namespace Nuke.Azure.KeyVault
                     .Where(x => x.Attribute != null)
                     .ToArray();
 
-            ControlFlow.Assert(attributes.Length > 0,
-                    "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
+            ControlFlow.Assert(attributes.Length > 0, "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
 
             KeyVaultSettingsAttribute attribute;
             if (attributes.Length > 1)

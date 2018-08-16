@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
@@ -13,9 +14,33 @@ namespace Nuke.Azure.KeyVault
 {
     public class KeyVaultSettings
     {
+        [CanBeNull]
         public string Secret { get; internal set; }
+        [CanBeNull]
         public string ClientId { get; internal set; }
+        [CanBeNull]
         public string BaseUrl { get; internal set; }
+
+        public bool IsValid ([CanBeNull]out string error)
+        {
+            error = null;
+            if (!IsPropertyValid(Secret, nameof(Secret), out var msg)) error += msg;
+            if (!IsPropertyValid(ClientId, nameof(ClientId), out msg)) error += msg;
+            if (!IsPropertyValid(BaseUrl, nameof(BaseUrl), out msg)) error += msg;
+            return error == null;
+        }
+
+        private bool IsPropertyValid ([CanBeNull] string value, string name, [CanBeNull] out string error)
+        {
+            error = null;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                error = $"The value of {name} is invalid{EnvironmentInfo.NewLine}";
+                return false;
+            }
+
+            return true;
+        }
     }
 
     /// <summary>Defines where the KeyVault login details can be found.</summary>
@@ -98,14 +123,16 @@ namespace Nuke.Azure.KeyVault
             {
                 var parameterAttribute = fieldInfo.GetCustomAttribute<ParameterAttribute>();
                 if (parameterAttribute != null)
-                    result = (string) parameterAttribute.GetValue(name, typeof(string));
+                {
+                    result = (string)parameterAttribute.GetValue(name, typeof(string));
+                    if (string.IsNullOrEmpty(result)) result = (string) fieldInfo.GetValue(NukeBuild.Instance);
+                }
+                   
             }
 
             if (string.IsNullOrWhiteSpace(result))
                 result = _parameterService.GetParameter<string>(name);
 
-            ControlFlow.Assert(!string.IsNullOrWhiteSpace(result),
-                    $"Unable to find 'ParameterAttribute', environment variable, or commandline argument with the name '{name}'");
             return result;
         }
     }

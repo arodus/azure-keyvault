@@ -49,9 +49,8 @@ namespace Nuke.Azure.KeyVault
         public override object GetValue ([NotNull] string memberName, [NotNull] Type memberType)
         {
             var settings = GetSettings();
-            if (!settings.IsValid(out var error))
+            if (!settings.IsValid(out _))
             {
-                Logger.Warn(error);
                 return null;
             }
 

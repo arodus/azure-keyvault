@@ -6,6 +6,8 @@ using System;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Git;
+using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities;
@@ -27,10 +29,14 @@ class Build : NukeBuild
 
     [GitVersion] readonly GitVersion GitVersion;
     [GitRepository] readonly GitRepository GitRepository;
+    [Solution] readonly Solution Solution;
 
+    [Parameter] readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
     [Parameter("Api key to push packages to NuGet.org.")] readonly string NuGetApiKey;
     [Parameter("Api key to access the GitHub.")] readonly string GitHubApiKey;
 
+    AbsolutePath SourceDirectory => RootDirectory / "source";
+    AbsolutePath OutputDirectory => RootDirectory / "output";
     string ChangelogFile => RootDirectory / "CHANGELOG.md";
     bool IsReleaseBranch => GitRepository.Branch.NotNull().StartsWith("release/");
     bool IsMasterBranch => GitRepository.Branch == "master";
@@ -38,77 +44,100 @@ class Build : NukeBuild
     public static int Main () => Execute<Build>(x => x.Pack);
 
     Target Clean => _ => _
-            .Executes(() =>
-            {
-                DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
-                EnsureCleanDirectory(OutputDirectory);
-            });
+        .Executes(() =>
+        {
+            DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
+            EnsureCleanDirectory(OutputDirectory);
+        });
 
     Target Restore => _ => _
-            .DependsOn(Clean)
-            .Executes(() => DotNetRestore(x => DefaultDotNetRestore));
+        .DependsOn(Clean)
+        .Executes(() =>
+        {
+            DotNetRestore(x => x
+                .SetProjectFile(Solution));
+        });
 
     Target Compile => _ => _
-            .DependsOn(Restore)
-            .Executes(() => DotNetBuild(x => DefaultDotNetBuild));
+        .DependsOn(Restore)
+        .Executes(() =>
+        {
+            DotNetBuild(x => x
+                .SetProjectFile(Solution)
+                .EnableNoRestore()
+                .SetConfiguration(Configuration)
+                .SetAssemblyVersion(GitVersion.GetNormalizedAssemblyVersion())
+                .SetFileVersion(GitVersion.GetNormalizedFileVersion())
+                .SetInformationalVersion(GitVersion.InformationalVersion));
+        });
 
     Target Pack => _ => _
-            .DependsOn(Compile)
-            .Executes(() =>
-            {
-                var releaseNotes = ExtractChangelogSectionNotes(ChangelogFile)
-                        .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
-                        .Concat(string.Empty)
-                        .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
-                        .JoinNewLine();
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var releaseNotes = ExtractChangelogSectionNotes(ChangelogFile)
+                .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
+                .Concat(string.Empty)
+                .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
+                .JoinNewLine();
 
-                DotNetPack(x => DefaultDotNetPack.SetPackageReleaseNotes(releaseNotes));
-            });
+            DotNetPack(x => x
+                .SetProject(Solution)
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .EnableIncludeSymbols()
+                .SetOutputDirectory(OutputDirectory)
+                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetPackageReleaseNotes(releaseNotes));
+        });
 
     Target Changelog => _ => _
-            .OnlyWhen(ShouldUpdateChangelog)
-            .Executes(() =>
-            {
-                FinalizeChangelog(ChangelogFile, GitVersion.MajorMinorPatch, GitRepository);
-            });
+        .OnlyWhen(ShouldUpdateChangelog)
+        .Executes(() =>
+        {
+            FinalizeChangelog(ChangelogFile, GitVersion.MajorMinorPatch, GitRepository);
+        });
 
     Target Push => _ => _
-            .DependsOn(Pack)
-            .Requires(() => NuGetApiKey)
-            .Requires(() => GitHasCleanWorkingCopy())
-            .Requires(() => Configuration.EqualsOrdinalIgnoreCase("release"))
-            .Requires(() => IsReleaseBranch || IsMasterBranch)
-            .Executes(() => GlobFiles(OutputDirectory, "*.nupkg")
-                    .Where(x => !x.EndsWith("symbols.nupkg"))
-                    .NotEmpty()
-                    .ForEach(x => DotNetNuGetPush(s => s
-                            .SetTargetPath(x)
-                            .SetSource("https://api.nuget.org/v3/index.json")
-                            .SetSymbolSource("https://nuget.smbsrc.net")
-                            .SetApiKey(NuGetApiKey))));
+        .DependsOn(Pack)
+        .Requires(() => NuGetApiKey)
+        .Requires(() => GitHasCleanWorkingCopy())
+        .Requires(() => Configuration.EqualsOrdinalIgnoreCase("release"))
+        .Requires(() => IsReleaseBranch || IsMasterBranch)
+        .Executes(() =>
+        {
+            GlobFiles(OutputDirectory, "*.nupkg")
+                .Where(x => !x.EndsWith("symbols.nupkg"))
+                .NotEmpty()
+                .ForEach(x => DotNetNuGetPush(s => s
+                    .SetTargetPath(x)
+                    .SetSource("https://api.nuget.org/v3/index.json")
+                    .SetSymbolSource("https://nuget.smbsrc.net")
+                    .SetApiKey(NuGetApiKey)));
+        });
 
     Target Release => _ => _
-            .Requires(() => GitHubApiKey)
-            .DependsOn(Push)
-            .After(PrepareRelease)
-            .Executes(async () =>
-            {
-                var releaseNotes = new[]
-                                   {
-                                           $"- [Nuget](https://www.nuget.org/packages/{c_toolNamespace}/{GitVersion.SemVer})",
-                                           $"- [Changelog](https://github.com/{c_addonRepoOwner}/{c_addonRepoName}/blob/{GitVersion.SemVer}/CHANGELOG.md)"
-                                   };
+        .Requires(() => GitHubApiKey)
+        .DependsOn(Push)
+        .After(PrepareRelease)
+        .Executes(async () =>
+        {
+            var releaseNotes = new[]
+                               {
+                                   $"- [Nuget](https://www.nuget.org/packages/{c_toolNamespace}/{GitVersion.SemVer})",
+                                   $"- [Changelog](https://github.com/{c_addonRepoOwner}/{c_addonRepoName}/blob/{GitVersion.SemVer}/CHANGELOG.md)"
+                               };
 
-                await PublishRelease(x => x.SetToken(GitHubApiKey)
-                        .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").ToArray())
-                        .SetRepositoryName(c_addonRepoName)
-                        .SetRepositoryOwner(c_addonRepoOwner)
-                        .SetCommitSha("master")
-                        .SetName($"NUKE {c_addonName} Addon v{GitVersion.MajorMinorPatch}")
-                        .SetTag($"{GitVersion.MajorMinorPatch}")
-                        .SetReleaseNotes(releaseNotes.Join("\n"))
-                );
-            });
+            await PublishRelease(x => x.SetToken(GitHubApiKey)
+                .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").ToArray())
+                .SetRepositoryName(c_addonRepoName)
+                .SetRepositoryOwner(c_addonRepoOwner)
+                .SetCommitSha("master")
+                .SetName($"NUKE {c_addonName} Addon v{GitVersion.MajorMinorPatch}")
+                .SetTag($"{GitVersion.MajorMinorPatch}")
+                .SetReleaseNotes(releaseNotes.Join("\n"))
+            );
+        });
 
     Target PrepareRelease => _ => _
             .Before(Restore)

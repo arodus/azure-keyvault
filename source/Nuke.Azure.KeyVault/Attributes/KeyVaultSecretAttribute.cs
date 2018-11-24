@@ -46,15 +46,14 @@ namespace Nuke.Azure.KeyVault
         public string SettingFieldName { get; set; }
 
         [CanBeNull]
-        public override object GetValue ([NotNull] string memberName, [NotNull] Type memberType)
+        public override object GetValue (MemberInfo member, NukeBuild build)
         {
-            var settings = GetSettings();
+            var settings = GetSettings(build);
             if (!settings.IsValid(out _))
-            {
                 return null;
-            }
 
-            var secretName = SecretName ?? memberName;
+            var secretName = SecretName ?? member.Name;
+            var memberType = member.GetFieldOrPropertyType();
             if (memberType == typeof(string))
                 return KeyVaultTasks.GetSecret(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultKey))
@@ -67,32 +66,24 @@ namespace Nuke.Azure.KeyVault
             throw new NotSupportedException();
         }
 
-        protected KeyVaultSettings GetSettings ()
+        protected KeyVaultSettings GetSettings (NukeBuild build)
         {
-            var instance = NukeBuild.Instance.NotNull();
-            var instanceType = instance.GetType();
-
-            var attributes = instanceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            var fieldsWithAttributes = build.GetType().GetFields(ReflectionService.Instance)
                     .Select(x => new { Field = x, Attribute = x.GetCustomAttribute<KeyVaultSettingsAttribute>() })
                     .Where(x => x.Attribute != null)
                     .ToArray();
 
-            ControlFlow.Assert(attributes.Length > 0, "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
+            ControlFlow.Assert(fieldsWithAttributes.Length > 0,
+                "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
+            ControlFlow.Assert(fieldsWithAttributes.Length > 1 && SettingFieldName != null,
+                "There is more then one KeyVaultSettings field defined. Please specify which one to use by setting 'SettingFieldName'");
 
-            KeyVaultSettingsAttribute attribute;
-            if (attributes.Length > 1)
-            {
-                ControlFlow.Assert(SettingFieldName != null,
-                        "There is more then one KeyVaultSettings field defined. Please specify which one to use by setting 'SettingFieldName'");
-                attribute = attributes.FirstOrDefault(x => x.Field.Name == SettingFieldName)
-                        .NotNull($"A KeyVaultSetting field with the name {SettingFieldName} does not exist.").Attribute;
-            }
-            else
-            {
-                attribute = attributes[0].Attribute;
-            }
+            var fieldWithAttribute = fieldsWithAttributes.Length == 1
+                ? fieldsWithAttributes.Single()
+                : fieldsWithAttributes.SingleOrDefault(x => x.Field.Name == SettingFieldName)
+                    .NotNull($"No field with the name '{SettingFieldName}' exists.");
 
-            return attribute.GetValue();
+            return fieldWithAttribute.Attribute.GetValue(build);
         }
     }
 }

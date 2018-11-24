@@ -4,7 +4,10 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
+using Nuke.Common;
+using Nuke.Common.Execution;
 
 namespace Nuke.Azure.KeyVault
 {
@@ -25,11 +28,11 @@ namespace Nuke.Azure.KeyVault
         public bool IncludeKey { get; set; }
 
         [CanBeNull]
-        public override object GetValue (string memberName, Type memberType)
+        public override object GetValue (MemberInfo member, NukeBuild build)
         {
-            if (memberType != typeof(KeyVaultCertificate))
+            if (member.GetFieldOrPropertyType() != typeof(KeyVaultCertificate))
                 throw new NotSupportedException();
-            return base.GetValue(memberName, memberType);
+            return base.GetValue(member, build);
         }
     }
 }

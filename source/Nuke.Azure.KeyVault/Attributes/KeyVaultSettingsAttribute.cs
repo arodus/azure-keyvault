@@ -67,7 +67,7 @@ namespace Nuke.Azure.KeyVault
         [CanBeNull] public string ClientSecretParameterName { get; set; }
 
         /// <summary>Defines where the KeyVault login details can be found.</summary>
-        public KeyVaultSettingsAttribute ()
+        public KeyVaultSettingsAttribute()
         {
         }
 
@@ -75,7 +75,7 @@ namespace Nuke.Azure.KeyVault
         /// <param name="baseUrlParameterName">The name of the parameter, commandline argument or environment variable which contains the base url to the Azure Key Vault.</param>
         /// <param name="clientIdParameterName">The name of the parameter, commandline argument or environment variable which contains the id of an AzureAd application with permissions for the required operations.</param>
         /// <param name="clientSecretParameterName">The name of the parameter, commandline argument or environment variable which contains the secret of the AzureAd application.</param>
-        public KeyVaultSettingsAttribute (string baseUrlParameterName, string clientIdParameterName, string clientSecretParameterName)
+        public KeyVaultSettingsAttribute(string baseUrlParameterName, string clientIdParameterName, string clientSecretParameterName)
         {
             BaseUrlParameterName = baseUrlParameterName;
             ClientIdParameterName = clientIdParameterName;
@@ -83,26 +83,26 @@ namespace Nuke.Azure.KeyVault
         }
 
         [NotNull]
-        public override object GetValue ([CanBeNull] string memberName, [NotNull] Type memberType)
+        public override object GetValue(MemberInfo member, NukeBuild build)
         {
+            var memberType = (member as FieldInfo)?.FieldType ?? ((PropertyInfo) member).PropertyType;
             ControlFlow.Assert(memberType == typeof(KeyVaultSettings), "memberType == typeof(KeyVaultConfiguration)");
             AssertIsValid();
-            // ReSharper disable  AssignNullToNotNullAttribute
+
             return new KeyVaultSettings
                    {
-                           ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName) : ClientId,
-                           BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName) : BaseUrl,
-                           Secret = GetParameter(ClientSecretParameterName)
+                       ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName, build) : ClientId,
+                       BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName, build) : BaseUrl,
+                       Secret = GetParameter(ClientSecretParameterName, build)
                    };
-            // ReSharper enable  AssignNullToNotNullAttribute
         }
 
-        public KeyVaultSettings GetValue ()
+        public KeyVaultSettings GetValue(NukeBuild build)
         {
-            return (KeyVaultSettings) GetValue(memberName: null, memberType: typeof(KeyVaultSettings));
+            return (KeyVaultSettings) GetValue(member: null, build);
         }
 
-        private void AssertIsValid ()
+        private void AssertIsValid()
         {
             var error = string.Empty;
             if (string.IsNullOrWhiteSpace(BaseUrl) && string.IsNullOrWhiteSpace(BaseUrlParameterName))
@@ -114,23 +114,24 @@ namespace Nuke.Azure.KeyVault
             ControlFlow.Assert(error == string.Empty, error);
         }
 
-        private string GetParameter (string name)
+        private string GetParameter(string memberName, NukeBuild build)
         {
             string result = null;
-            var fieldInfo = NukeBuild.Instance.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = build.GetType().GetField(memberName, ReflectionService.Instance);
             if (fieldInfo != null)
             {
                 var parameterAttribute = fieldInfo.GetCustomAttribute<ParameterAttribute>();
                 if (parameterAttribute != null)
                 {
-                    result = (string)parameterAttribute.GetValue(name, typeof(string));
-                    if (string.IsNullOrEmpty(result)) result = (string) fieldInfo.GetValue(NukeBuild.Instance);
+                    var member = build.GetType().GetMember(memberName, ReflectionService.Instance).Single();
+                    result = (string) parameterAttribute.GetValue(member, build);
+                    if (string.IsNullOrEmpty(result))
+                        result = (string) fieldInfo.GetValue(build);
                 }
-                   
             }
 
             if (string.IsNullOrWhiteSpace(result))
-                result = _parameterService.GetParameter<string>(name);
+                result = _parameterService.GetParameter<string>(memberName);
 
             return result;
         }

@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/nuke-build/azure-keyvault</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/nuke-build/azure-keyvault/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</PackageIconUrl>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
 
@@ -20,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.4" />
-    <PackageReference Include="Nuke.Common" Version="0.4" />
+    <PackageReference Include="Nuke.Common" Version="0.*" />
   </ItemGroup>
 
 </Project>

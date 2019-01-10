@@ -83,18 +83,22 @@ namespace Nuke.Azure.KeyVault
         }
 
         [NotNull]
-        public override object GetValue(MemberInfo member, NukeBuild build)
+        public override object GetValue(MemberInfo member, object instance)
         {
-            var memberType = (member as FieldInfo)?.FieldType ?? ((PropertyInfo) member).PropertyType;
-            ControlFlow.Assert(memberType == typeof(KeyVaultSettings), "memberType == typeof(KeyVaultConfiguration)");
-            AssertIsValid();
+            if (instance is NukeBuild build)
+            {
+                var memberType = (member as FieldInfo)?.FieldType ?? ((PropertyInfo)member)?.PropertyType;
+                ControlFlow.Assert(memberType == typeof(KeyVaultSettings), "memberType == typeof(KeyVaultConfiguration)");
+                AssertIsValid();
 
-            return new KeyVaultSettings
-                   {
-                       ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName, build) : ClientId,
-                       BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName, build) : BaseUrl,
-                       Secret = GetParameter(ClientSecretParameterName, build)
-                   };
+                return new KeyVaultSettings
+                {
+                    ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName, build) : ClientId,
+                    BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName, build) : BaseUrl,
+                    Secret = GetParameter(ClientSecretParameterName, build)
+                };
+            }
+            return default;
         }
 
         public KeyVaultSettings GetValue(NukeBuild build)

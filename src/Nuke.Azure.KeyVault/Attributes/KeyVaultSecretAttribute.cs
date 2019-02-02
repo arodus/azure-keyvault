@@ -46,14 +46,14 @@ namespace Nuke.Azure.KeyVault
         public string SettingFieldName { get; set; }
 
         [CanBeNull]
-        public override object GetValue (MemberInfo member, NukeBuild build)
+        public override object GetValue (MemberInfo member, object instance)
         {
-            var settings = GetSettings(build);
+            var settings = GetSettings(instance);
             if (!settings.IsValid(out _))
                 return null;
 
             var secretName = SecretName ?? member.Name;
-            var memberType = member.GetFieldOrPropertyType();
+            var memberType = member.GetMemberType();
             if (memberType == typeof(string))
                 return KeyVaultTasks.GetSecret(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultKey))
@@ -66,16 +66,16 @@ namespace Nuke.Azure.KeyVault
             throw new NotSupportedException();
         }
 
-        protected KeyVaultSettings GetSettings (NukeBuild build)
+        protected KeyVaultSettings GetSettings (object instance)
         {
-            var fieldsWithAttributes = build.GetType().GetFields(ReflectionService.Instance)
+            var fieldsWithAttributes = instance.GetType().GetFields(ReflectionService.Instance)
                     .Select(x => new { Field = x, Attribute = x.GetCustomAttribute<KeyVaultSettingsAttribute>() })
                     .Where(x => x.Attribute != null)
                     .ToArray();
 
             ControlFlow.Assert(fieldsWithAttributes.Length > 0,
                 "A field of the type `KeyVaultSettings` with the 'KeyVaultSettingsAttribute' has to be defined in the build class when using Azure KeyVault.");
-            ControlFlow.Assert(fieldsWithAttributes.Length > 1 && SettingFieldName != null,
+            ControlFlow.Assert(fieldsWithAttributes.Length == 1 || SettingFieldName != null,
                 "There is more then one KeyVaultSettings field defined. Please specify which one to use by setting 'SettingFieldName'");
 
             var fieldWithAttribute = fieldsWithAttributes.Length == 1
@@ -83,7 +83,7 @@ namespace Nuke.Azure.KeyVault
                 : fieldsWithAttributes.SingleOrDefault(x => x.Field.Name == SettingFieldName)
                     .NotNull($"No field with the name '{SettingFieldName}' exists.");
 
-            return fieldWithAttribute.Attribute.GetValue(build);
+            return fieldWithAttribute.Attribute.GetValue(instance);
         }
     }
 }

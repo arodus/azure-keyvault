@@ -1,22 +1,19 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.Azure.KeyVault", "source\Nuke.Azure.KeyVault\Nuke.Azure.KeyVault.csproj", "{AE561C37-4BC0-4AF1-9740-F5ED836789B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{AD2C85FF-6F3C-4A69-8A52-6DDF785D62EF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{A9B06A31-502E-4E99-B189-B155B2B84506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.Azure.KeyVault", "src\Nuke.Azure.KeyVault\Nuke.Azure.KeyVault.csproj", "{440EC8CA-99BD-42C5-9C27-DA2E45DE8EDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.Azure.KeyVault.Tests", "src\Nuke.Azure.KeyVault.Tests\Nuke.Azure.KeyVault.Tests.csproj", "{88DD9192-6DA5-45AE-B1A0-94591418BF9E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{E6507DE2-D1D5-4513-854E-1986566ABBF8}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		.gitattributes = .gitattributes
-		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
-		LICENSE = LICENSE
-		nuke-azure-keyvault.DotSettings = nuke-azure-keyvault.DotSettings
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{EBCB4686-9D19-411A-B52F-26B8A12582D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,17 +21,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE561C37-4BC0-4AF1-9740-F5ED836789B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBCB4686-9D19-411A-B52F-26B8A12582D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBCB4686-9D19-411A-B52F-26B8A12582D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD2C85FF-6F3C-4A69-8A52-6DDF785D62EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD2C85FF-6F3C-4A69-8A52-6DDF785D62EF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{440EC8CA-99BD-42C5-9C27-DA2E45DE8EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{440EC8CA-99BD-42C5-9C27-DA2E45DE8EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{440EC8CA-99BD-42C5-9C27-DA2E45DE8EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{440EC8CA-99BD-42C5-9C27-DA2E45DE8EDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DD9192-6DA5-45AE-B1A0-94591418BF9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DD9192-6DA5-45AE-B1A0-94591418BF9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DD9192-6DA5-45AE-B1A0-94591418BF9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88DD9192-6DA5-45AE-B1A0-94591418BF9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {761E201C-41B5-49DD-A1A1-ACA05931C944}
+		SolutionGuid = {A2C37D4D-74E1-443B-999B-505B8C6694C9}
 	EndGlobalSection
 EndGlobal

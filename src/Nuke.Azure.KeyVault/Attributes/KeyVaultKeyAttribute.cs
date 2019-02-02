@@ -22,11 +22,11 @@ namespace Nuke.Azure.KeyVault
         {
         }
 
-        public override object GetValue (MemberInfo member, NukeBuild build)
+        public override object GetValue (MemberInfo member, object instance)
         {
-            if (member.GetFieldOrPropertyType() != typeof(KeyVaultKey))
+            if (member.GetMemberType() != typeof(KeyVaultKey))
                 throw new NotSupportedException();
-            return base.GetValue(member, build);
+            return base.GetValue(member, instance);
         }
     }
 }

@@ -83,23 +83,23 @@ namespace Nuke.Azure.KeyVault
         }
 
         [NotNull]
-        public override object GetValue(MemberInfo member, NukeBuild build)
+        public override object GetValue(MemberInfo member, object instance)
         {
-            var memberType = (member as FieldInfo)?.FieldType ?? ((PropertyInfo) member).PropertyType;
+            var memberType = member.GetMemberType();
             ControlFlow.Assert(memberType == typeof(KeyVaultSettings), "memberType == typeof(KeyVaultConfiguration)");
             AssertIsValid();
 
             return new KeyVaultSettings
                    {
-                       ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName, build) : ClientId,
-                       BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName, build) : BaseUrl,
-                       Secret = GetParameter(ClientSecretParameterName, build)
+                       ClientId = string.IsNullOrWhiteSpace(ClientId) ? GetParameter(ClientIdParameterName, instance) : ClientId,
+                       BaseUrl = string.IsNullOrWhiteSpace(BaseUrl) ? GetParameter(BaseUrlParameterName, instance) : BaseUrl,
+                       Secret = GetParameter(ClientSecretParameterName, instance)
                    };
         }
 
-        public KeyVaultSettings GetValue(NukeBuild build)
+        public KeyVaultSettings GetValue(object instance)
         {
-            return (KeyVaultSettings) GetValue(member: null, build);
+            return (KeyVaultSettings) GetValue(member: null, instance);
         }
 
         private void AssertIsValid()
@@ -114,19 +114,19 @@ namespace Nuke.Azure.KeyVault
             ControlFlow.Assert(error == string.Empty, error);
         }
 
-        private string GetParameter(string memberName, NukeBuild build)
+        private string GetParameter(string memberName, object instance)
         {
             string result = null;
-            var fieldInfo = build.GetType().GetField(memberName, ReflectionService.Instance);
+            var fieldInfo = instance.GetType().GetField(memberName, ReflectionService.Instance);
             if (fieldInfo != null)
             {
                 var parameterAttribute = fieldInfo.GetCustomAttribute<ParameterAttribute>();
                 if (parameterAttribute != null)
                 {
-                    var member = build.GetType().GetMember(memberName, ReflectionService.Instance).Single();
-                    result = (string) parameterAttribute.GetValue(member, build);
+                    var member = instance.GetType().GetMember(memberName, ReflectionService.Instance).Single();
+                    result = (string) parameterAttribute.GetValue(member, instance);
                     if (string.IsNullOrEmpty(result))
-                        result = (string) fieldInfo.GetValue(build);
+                        result = (string) fieldInfo.GetValue(instance);
                 }
             }
 

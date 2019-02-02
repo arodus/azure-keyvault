@@ -28,11 +28,11 @@ namespace Nuke.Azure.KeyVault
         public bool IncludeKey { get; set; }
 
         [CanBeNull]
-        public override object GetValue (MemberInfo member, NukeBuild build)
+        public override object GetValue (MemberInfo member, object instance)
         {
-            if (member.GetFieldOrPropertyType() != typeof(KeyVaultCertificate))
+            if (member.GetMemberType() != typeof(KeyVaultCertificate))
                 throw new NotSupportedException();
-            return base.GetValue(member, build);
+            return base.GetValue(member, instance);
         }
     }
 }

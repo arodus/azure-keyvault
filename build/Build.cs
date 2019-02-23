@@ -142,8 +142,8 @@ class Build : NukeBuild
                 .EnableIncludeSymbols()
                 .SetSymbolPackageFormat(DotNetSymbolPackageFormat.snupkg)
                 .SetOutputDirectory(OutputDirectory)
-                .SetVersion(GitVersion.NuGetVersionV2));
-                // .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository)));
+                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository)));
         });
 
     Target Publish => _ => _

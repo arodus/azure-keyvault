@@ -1,4 +1,4 @@
-﻿// Copyright Sebastian Karasek, Matthias Koch 2018.
+// Copyright Sebastian Karasek, Matthias Koch 2018.
 // Distributed under the MIT License.
 // https://github.com/nuke-build/azure-keyvault/blob/master/LICENSE
 
@@ -46,7 +46,7 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
         {
-            DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
+            GlobDirectories(SourceDirectory, "**/bin", "**/obj").ForEach(DeleteDirectory);
             EnsureCleanDirectory(OutputDirectory);
         });
 
@@ -92,7 +92,7 @@ class Build : NukeBuild
         });
 
     Target Changelog => _ => _
-        .OnlyWhen(ShouldUpdateChangelog)
+        .OnlyWhenDynamic(() => ShouldUpdateChangelog())
         .Executes(() =>
         {
             FinalizeChangelog(ChangelogFile, GitVersion.MajorMinorPatch, GitRepository);

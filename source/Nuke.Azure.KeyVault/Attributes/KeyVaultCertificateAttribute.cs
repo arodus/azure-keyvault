@@ -30,7 +30,7 @@ namespace Nuke.Azure.KeyVault
         [CanBeNull]
         public override object GetValue (MemberInfo member, object instance)
         {
-            if (member.GetFieldOrPropertyType() != typeof(KeyVaultCertificate))
+            if (member.GetMemberType() != typeof(KeyVaultCertificate))
                 throw new NotSupportedException();
             return base.GetValue(member, instance);
         }

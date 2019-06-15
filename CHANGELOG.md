@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [vNext]
-
+- Added resolving of string secrets from parameters
 ## [0.4.3] / 2019-02-23
 - Changed `Nuke.Common` version to 0.17.0
 

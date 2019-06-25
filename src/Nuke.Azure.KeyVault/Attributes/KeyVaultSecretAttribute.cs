@@ -84,7 +84,7 @@ namespace Nuke.Azure.KeyVault
                 : fieldsWithAttributes.SingleOrDefault(x => x.Field.Name == SettingFieldName)
                     .NotNull($"No field with the name '{SettingFieldName}' exists.");
 
-            return fieldWithAttribute.Attribute.GetValue(instance);
+            return (KeyVaultSettings) fieldWithAttribute.Attribute.GetValue(fieldWithAttribute.Field, instance);
         }
     }
 }

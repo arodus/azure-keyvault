@@ -56,7 +56,7 @@ namespace Nuke.Azure.KeyVault
             var memberType = member.GetMemberType();
 
             if (memberType == typeof(string))
-                return new ParameterService().GetParameter<string>(secretName) ?? KeyVaultTasks.GetSecret(CreateSettings(secretName, settings));
+                return EnvironmentInfo.GetParameter<string>(secretName) ?? KeyVaultTasks.GetSecret(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultKey))
                 return KeyVaultTasks.GetKeyBundle(CreateSettings(secretName, settings));
             if (memberType == typeof(KeyVaultCertificate))

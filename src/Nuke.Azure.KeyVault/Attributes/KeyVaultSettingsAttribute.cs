@@ -48,8 +48,6 @@ namespace Nuke.Azure.KeyVault
     [MeansImplicitUse(ImplicitUseKindFlags.Assign)]
     public class KeyVaultSettingsAttribute : InjectionAttributeBase
     {
-        private readonly ParameterService _parameterService = new ParameterService();
-
         /// <summary><p>The base url of the Azure Key Vault. Either <see cref="BaseUrl"/> or <see cref="BaseUrlParameterName"/> must be set.</p></summary>
         [CanBeNull] public string BaseUrl { get; set; }
 
@@ -131,7 +129,7 @@ namespace Nuke.Azure.KeyVault
             }
 
             if (string.IsNullOrWhiteSpace(result))
-                result = _parameterService.GetParameter<string>(memberName);
+                result = EnvironmentInfo.GetParameter<string>(memberName);
 
             return result;
         }

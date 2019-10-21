@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [vNext]
 
+## [0.6.0] / 2019-10-21
+- Changed `Nuke.Common` version to 0.22.0
+
 ## [0.5.0] / 2019-06-25
 - Changed `Nuke.Common` version to 0.20.1
 - Added resolving of string secrets from parameters
@@ -34,7 +37,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.0] / 2018-05-22
 - Initial release
 
-[vNext]: https://github.com/nuke-build/azure-keyvault/compare/0.5.0...HEAD
+[vNext]: https://github.com/nuke-build/azure-keyvault/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/nuke-build/azure-keyvault/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nuke-build/azure-keyvault/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/nuke-build/azure-keyvault/compare/0.4.1...0.4.3
 [0.4.1]: https://github.com/nuke-build/azure-keyvault/compare/0.4.0...0.4.1
